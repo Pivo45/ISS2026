@@ -3,6 +3,6 @@
 
  [Testo di riferimento:](https://anatali.github.io/issLab2026/_static/docs/Protobook.pdf)
 
- <h2 id="ParteA">Parte A: Dai programmi ai Sistemi a Microservizi</h2>
+
 
 
