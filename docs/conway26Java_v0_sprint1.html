@@ -38,156 +38,65 @@ R2  L’utente deve poter:
      - pulire la configurazione della griglia (a gioco fermo)
     </pre>
 
-    <!-- REQUIREMENT ANALYSIS -->
-	<h2>Requirement analysis</h2>
+    <h2>Requirement analysis</h2>
 
-	<p>
-	    Dall'analisi dei requisiti vediamo le entità <b>Cella</b> e <b>Griglia</b>, che formalizziamo
-	    come di seguito.
-	</p>
+<p>
+    Dall'analisi dei requisiti vediamo le entità <b>Cella</b> e <b>Griglia</b>, che formalizziamo
+    come di seguito.
+</p>
 
-	<h3>ICell</h3>
-	<pre>
-	public interface ICell {
-	    void setStatus(boolean v);
-	    boolean isAlive();
-	    void switchCellState();
-	}
-	</pre>
+<h3>ICell</h3>
+<p>
+    Codice completo:
+    <a href="https://github.com/Pivo45/ISS2026/blob/master/ConwayLife/Sprint1/conway26Java/src/main/java/conway/domain/ICell.java">
+        ICell.java
+    </a>
+</p>
 
-	<h3>IGrid</h3>
-	<pre>
-	public interface IGrid {
-	    int getRowsNum();
-	    int getColsNum();
-	    void setCellValue(int x, int y, boolean state);
-	    ICell getCell(int x, int y);
-	    boolean getCellValue(int x, int y);
-	    void reset();
-	}
-	</pre>
+<h3>IGrid</h3>
+<p>
+    Codice completo:
+    <a href="https://github.com/Pivo45/ISS2026/blob/master/ConwayLife/Sprint1/conway26Java/src/main/java/conway/domain/IGrid.java">
+        IGrid.java
+    </a>
+</p>
 
-	<p>
-	    Dai requisiti R1 leggiamo che abbiamo bisogno di incapsulare
-	    le regole del gioco in un'entità. A questo scopo formalizziamo <b>Life</b>.
-	</p>
+<h3>LifeInterface</h3>
+<p>
+    Codice completo:
+    <a href="https://github.com/Pivo45/ISS2026/blob/master/ConwayLife/Sprint1/conway26Java/src/main/java/conway/domain/LifeInterface.java">
+        LifeInterface.java
+    </a>
+</p>
 
-	<h3>LifeInterface</h3>
-	<pre>
-	public interface LifeInterface {
-	    void nextGeneration();
-	    boolean isAlive(int row, int col);
-	    void setCell(int row, int col, boolean alive);
-	    int getRows();
-	    int getCols();
-	    ICell getCell(int x, int y);
-	    IGrid getGrid();
-	    void resetGrids();
-	    String gridRep();
-	}
-	</pre>
+<p>
+    <b>Abbiamo quindi definito la struttura di queste entità.
+    Ora definiamo il comportamento che ci aspettiamo da esse.</b>
+</p>
 
-	<p>
-	    <b>Abbiamo quindi definito la struttura di queste entità.
-	    Ora definiamo il comportamento che ci aspettiamo da esse.</b>
-	</p>
+<h3>CellTest</h3>
+<p>
+    Classe di test:
+    <a href="https://github.com/Pivo45/ISS2026/blob/master/ConwayLife/Sprint1/conway26Java/src/main/java/test/CellTest.java">
+        CellTest.java
+    </a>
+</p>
 
-	<h3>CellTest</h3>
-	<pre>
-	public class CellTest {
-	    private ICell c;
+<h3>GridTest</h3>
+<p>
+    Classe di test:
+    <a href="https://github.com/Pivo45/ISS2026/blob/master/ConwayLife/Sprint1/conway26Java/src/main/java/test/GridTest.java">
+        GridTest.java
+    </a>
+</p>
 
-	    @Test
-	    public void testCellAlive() {
-	        c.setStatus(true);
-	        assertTrue(c.isAlive());
-	    }
-
-	    @Test
-	    public void testCellDead() {
-	        c.setStatus(false);
-	        assertFalse(c.isAlive());
-	    }
-	}
-	</pre>
-
-	<h3>GridTest</h3>
-	<pre>
-	public class GridTest {
-
-	    private Grid grid;
-
-	    @Before
-	    public void setup() {
-	        grid = new Grid(5, 5);
-	    }
-
-	    @Test
-	    public void testDims() {
-	        assertTrue(grid.getRowsNum() == 5);
-	        assertTrue(grid.getColsNum() == 5);
-	    }
-
-	    @Test
-	    public void testGridCellValue() {
-	        grid.setCellValue(0, 0, true);
-
-	        assertTrue(grid.getCellValue(0, 0));   // la cella impostata è viva
-	        assertFalse(grid.getCellValue(0, 1));  // cella vicina non modificata = morta
-	    }
-	}
-	</pre>
-
-	<h3>LifeTest</h3>
-	<pre>
-	public class LifeTest {
-
-	    private LifeInterface life;
-
-	    @Before
-	    public void setup() {
-	        life = new Life(5, 5);
-	    }
-
-	    @Test
-	    public void testResetGrids() {
-	        life.setCell(1, 1, true);
-	        life.setCell(3, 4, true);
-
-	        life.resetGrids();
-
-	        for (int r = 0; r < life.getRows(); r++) {
-	            for (int c = 0; c < life.getCols(); c++) {
-	                assertFalse(life.isAlive(r, c));
-	            }
-	        }
-	    }
-
-	    @Test
-	    public void testBlinkerOscillation() {
-	        life.resetGrids();
-	        life.setCell(1, 2, true);
-	        life.setCell(2, 2, true);
-	        life.setCell(3, 2, true);
-
-	        life.nextGeneration();
-
-	        assertTrue(life.isAlive(2, 1));
-	        assertTrue(life.isAlive(2, 2));
-	        assertTrue(life.isAlive(2, 3));
-	    }
-
-	    @Test
-	    public void testLonelyCellDies() {
-	        life.resetGrids();
-	        life.setCell(2, 2, true);
-
-	        life.nextGeneration();
-
-	        assertFalse(life.isAlive(2, 2));
-	    }
-	}
-	</pre>
+<h3>LifeTest</h3>
+<p>
+    Classe di test:
+    <a href="https://github.com/Pivo45/ISS2026/blob/master/ConwayLife/Sprint1/conway26Java/src/main/java/test/LifeTest.java">
+        LifeTest.java
+    </a>
+</p>
 
     <!-- PROBLEM ANALYSIS -->
     <h2>Problem Analysis</h2>
